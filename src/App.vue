@@ -110,7 +110,7 @@
               </v-menu>
             </v-flex>
            </v-layout>
-           <v-btn color="info">APPLY</v-btn>
+           <v-btn @click="reset" color="info">RESET</v-btn>
          </v-card>
       </v-container>
       <v-container :grid-list-xl="true">
@@ -225,6 +225,12 @@ export default {
       if (!date) return null
       const [month, day, year] = date.split('/')
       return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
+    },
+    reset () {
+      this.userSearch = ''
+      this.dateSearchStart = null
+      this.dateSearchEnd = null
+      this.selected = null
     }
   },
   computed: {
