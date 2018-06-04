@@ -138,11 +138,10 @@
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld'
 import Faker from 'faker'
 
 let fields = []
-for (let i = 0; i < 100; i++) {
+for (let i = 0; i < 1000; i++) {
   const firstName = Faker.fake('{{name.firstName}}')
   const lastName = Faker.fake('{{name.lastName}}')
   const email = Faker.fake('{{internet.email}}')
@@ -198,9 +197,6 @@ for (let i = 0; i < 100; i++) {
 console.log(fields)
 export default {
   name: 'App',
-  components: {
-    HelloWorld
-  },
   methods: {
     upgrateDate: function (dateJSON) {
       let date = new Date(Date.parse(dateJSON))
@@ -215,16 +211,6 @@ export default {
         second: 'numeric'
       }
       return date.toLocaleString('en-US', options).replace(/,/g, '')
-    },
-    formatDate (date) {
-      if (!date) return null
-      const [year, month, day] = date.split('-')
-      return `${month}/${day}/${year}`
-    },
-    parseDate (date) {
-      if (!date) return null
-      const [month, day, year] = date.split('/')
-      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
     },
     reset () {
       this.userSearch = ''
