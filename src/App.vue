@@ -5,9 +5,7 @@
          <v-card style="padding: 1.2em;">
            <v-layout>
             <v-flex xs4>
-              <v-text-field v-model.trim="userSearch" label="Username"/>
-              {{dateSearchStart}}
-              {{timeSearchStart}}
+              <v-text-field v-model.trim="userSearch" :label="$t('userName')"/>
             </v-flex>
             <v-flex xs4>
               <v-menu
@@ -25,10 +23,10 @@
                 <v-text-field
                   slot="activator"
                   v-model="dateSearchStart"
-                  label="Picker without buttons"
+                  :label="$t('dateStart')"
                   prepend-icon="event"
                   readonly/>
-                <v-date-picker v-model="dateSearchStart" no-title @input="dateMenuStart = false"></v-date-picker>
+                <v-date-picker v-model="dateSearchStart" :locale="$i18n.locale" no-title @input="dateMenuStart = false"></v-date-picker>
               </v-menu>
             </v-flex>
             <v-flex xs4>
@@ -47,10 +45,10 @@
                 <v-text-field
                   slot="activator"
                   v-model="timeSearchStart"
-                  label="Picker without buttons"
+                  :label="$t('timeStart')"
                   prepend-icon="access_time"
                   readonly/>
-                <v-time-picker v-model="timeSearchStart" @input="timeMenuStart = false"/>
+                <v-time-picker v-model="timeSearchStart" format="24hr" @input="timeMenuStart = false"/>
               </v-menu>
             </v-flex>
            </v-layout>
@@ -59,11 +57,9 @@
               <v-select
                 :items="options"
                 v-model="selected"
-                label="Select"
+                :label="$t('actionType')"
                 item-value="text"
               />
-              {{dateSearchEnd}}
-              {{timeSearchEnd}}
             </v-flex>
             <v-flex xs4>
               <v-menu
@@ -81,10 +77,10 @@
                 <v-text-field
                   slot="activator"
                   v-model="dateSearchEnd"
-                  label="Picker without buttons"
+                  :label="$t('dateEnd')"
                   prepend-icon="event"
                   readonly/>
-                <v-date-picker v-model="dateSearchEnd" no-title @input="dateMenuEnd = false"></v-date-picker>
+                <v-date-picker v-model="dateSearchEnd" :locale="$i18n.locale" no-title @input="dateMenuEnd = false"></v-date-picker>
               </v-menu>
             </v-flex>
             <v-flex xs4>
@@ -103,21 +99,29 @@
                 <v-text-field
                   slot="activator"
                   v-model="timeSearchEnd"
-                  label="Picker without buttons"
+                  :label="$t('timeEnd')"
                   prepend-icon="access_time"
                   readonly/>
-                <v-time-picker v-model="timeSearchEnd" @input="timeMenuEnd = false"/>
+                <v-time-picker v-model="timeSearchEnd" format="24hr" @input="timeMenuEnd = false"/>
               </v-menu>
             </v-flex>
            </v-layout>
-           <v-btn @click="reset" color="info">RESET</v-btn>
+           <v-btn @click="reset" color="info">{{$t("reset")}}</v-btn>
+           <v-select
+                :items="languages"
+                v-model="$i18n.locale"
+                label="Select"
+                item-value="text"
+              />
          </v-card>
       </v-container>
       <v-container :grid-list-xl="true">
         <v-card>
           <v-data-table
-            :rows-per-page-items="[5,10,25,{'text':'Все','value':-1}]"
+            :rows-per-page-items="[5,10,25, {'text': $t('all'),'value':-1}]"
+            :rows-per-page-text="$t('rowsPerPage')"
             :headers="headers"
+            :no-data-text="$t('noDataAvailable')"
             :items="tabletWithFilter"
             item-key="id"
             :total-items="logs.lenght"
@@ -130,6 +134,9 @@
               <td>{{ props.item.username }}</td>
               <td>{{ props.item.timestamp }}</td>
             </template>
+            <template slot="pageText" slot-scope="props">
+              {{ props.pageStart }}-{{ props.pageStop }} {{$t('pretextForPages')}} {{ props.itemsLength }}
+            </template>
           </v-data-table>
         </v-card>
       </v-container>
@@ -138,65 +145,37 @@
 </template>
 
 <script>
-import Faker from 'faker'
+import logs from './getLogs.js'
 
-let fields = []
-for (let i = 0; i < 1000; i++) {
-  const firstName = Faker.fake('{{name.firstName}}')
-  const lastName = Faker.fake('{{name.lastName}}')
-  const email = Faker.fake('{{internet.email}}')
-  let date = null
-  if (i % 2 === 0) {
-    date = Faker.date.between(new Date(Date.parse('2017-05-29T05:13:43.000Z')), new Date(Date.parse('2018-05-29T05:13:43.000Z')))
-  } else {
-    const today = new Date()
-    let yesterday = new Date()
-    yesterday.setDate(yesterday.getDate() - 1)
-    date = Faker.date.between(yesterday, today)
-  }
-  fields.push({
-    id: Faker.fake('{{random.number}}'),
-    actionType: Faker.random.arrayElement(['USER_UPDATED',
-      'USER_LOGIN',
-      'USER_LOGOUT',
-      'UPDATE_PROFILE']),
-    timestamp: date.toISOString(),
-    userId: i,
-    createdAt: '2018-05-29T05:22:10.000Z',
-    updatedAt: date.toISOString(),
-    user: {
-      id: i,
-      username: email,
-      password: '$2a$10$CB8uR3Zsm.weM4M66uJ4JOBRicCsSdgPg8M7Gmv7yIwuBQq9MIgMe',
-      role: Faker.random.arrayElement(['MANAGER',
-        'ADMIN',
-        'CLIENT']),
-      isActive: true,
-      canOpenBox: false,
-      canSendEmail: false,
-      resetPasswordToken: null,
-      resetPasswordExpires: null,
-      firstName: firstName,
-      lastName: lastName,
-      email: email,
-      phoneNumber: Faker.phone.phoneNumber(),
-      street: Faker.address.streetName(),
-      houseno: '1',
-      zip: Faker.address.zipCode(),
-      city: '1',
-      country: Faker.address.countryCode(),
-      createdAt: '2018-05-29T05:13:43.000Z',
-      updatedAt: '2018-05-29T05:22:10.000Z'
-    },
-    meta: {
-      text: email,
-      url: '/users/' + i
-    }
-  })
-}
-console.log(fields)
 export default {
   name: 'App',
+  data () {
+    console.log(this)
+    return {
+      selected: null,
+      options: [
+        'USER_UPDATED',
+        'USER_LOGIN',
+        'USER_LOGOUT',
+        'UPDATE_PROFILE'
+      ],
+      userSearch: '',
+      dateSearchStart: null,
+      dateMenuStart: null,
+      dateSearchEnd: null,
+      dateMenuEnd: false,
+      timeSearchStart: null,
+      timeMenuStart: null,
+      timeSearchEnd: null,
+      timeMenuEnd: null,
+      pagination: {
+        sortBy: 'created_time',
+        descending: true,
+        itemPerPage: 10
+      },
+      logs: logs
+    }
+  },
   methods: {
     upgrateDate: function (dateJSON) {
       let date = new Date(Date.parse(dateJSON))
@@ -216,6 +195,8 @@ export default {
       this.userSearch = ''
       this.dateSearchStart = null
       this.dateSearchEnd = null
+      this.timeSearchStart = null
+      this.timeSearchEnd = null
       this.selected = null
     }
   },
@@ -248,8 +229,7 @@ export default {
           const timeSearchEnd = new Date(Date.now())
           timeSearchStart.setHours(timeStartArray[0], timeStartArray[1], 0, 0)
           timeSearchEnd.setHours(timeEndArray[0], timeEndArray[1], 0, 0)
-          console.log(timeSearchStart)
-          console.log(timeSearchEnd)
+
           if (timeSearchStart < timestamp && timeSearchEnd > timestamp) {
             date = true
           } else {
@@ -267,116 +247,29 @@ export default {
           timestamp: this.upgrateDate(el.timestamp)
         }
       })
-    }
-  },
-  data () {
-    return {
-      selected: null,
-      options: [
-        'USER_UPDATED',
-        'USER_LOGIN',
-        'USER_LOGOUT',
-        'UPDATE_PROFILE'
-      ],
-      userSearch: '',
-      dateSearchStart: null,
-      dateMenuStart: null,
-      dateSearchEnd: null,
-      dateMenuEnd: false,
-      timeSearchStart: null,
-      timeMenuStart: null,
-      timeSearchEnd: null,
-      timeMenuEnd: null,
-      pagination: {
-        sortBy: 'created_time',
-        descending: true,
-        itemPerPage: 10
-      },
-      headers: [
+    },
+    headers () {
+      return [
         {
-          text: 'Action',
+          text: this.$t('action'),
           align: 'left',
           sortable: false
         },
         {
-          text: 'Username',
+          text: this.$t('userName'),
           align: 'left',
           sortable: false
         },
         {
-          text: 'Timestamp',
+          text: this.$t('timestamp'),
           align: 'left',
           sortable: false
         }
-      ],
-      logs: [{
-        id: 964,
-        'actionType': 'USER_UPDATEDID:21',
-        'timestamp': '2018-06-29T05:22:10.000Z',
-        'userId': 21,
-        'createdAt': '2018-05-29T05:22:10.000Z',
-        'updatedAt': '2018-05-29T05:22:10.000Z',
-        'user': {
-          'id': 21,
-          'username': 'egor@gg.ru',
-          'password': '$2a$10$CB8uR3Zsm.weM4M66uJ4JOBRicCsSdgPg8M7Gmv7yIwuBQq9MIgMe',
-          'role': 'MANAGER',
-          'isActive': true,
-          'canOpenBox': false,
-          'canSendEmail': false,
-          'resetPasswordToken': null,
-          'resetPasswordExpires': null,
-          'firstName': 'Egor',
-          'lastName': 'Ivanov',
-          'email': 'egor@gg.ru',
-          'phoneNumber': '+7123123123123',
-          'street': '1',
-          'houseno': '1',
-          'zip': '1',
-          'city': '1',
-          'country': 'AO',
-          'createdAt': '2018-05-29T05:13:43.000Z',
-          'updatedAt': '2018-05-29T05:22:10.000Z'
-        },
-        'meta': {
-          'text': 'egor@gg.ru',
-          'url': '/users/21'
-        }
-      },
-      {
-        'id': 964,
-        'actionType': 'USER_UPDATEDID:21',
-        'timestamp': '2018-05-29T05:22:10.000Z',
-        'userId': 21,
-        'createdAt': '2018-05-29T05:22:10.000Z',
-        'updatedAt': '2018-05-29T05:22:10.000Z',
-        'user': {
-          'id': 21,
-          'username': 'egor@gg.ru',
-          'password': '$2a$10$CB8uR3Zsm.weM4M66uJ4JOBRicCsSdgPg8M7Gmv7yIwuBQq9MIgMe',
-          'role': 'MANAGER',
-          'isActive': true,
-          'canOpenBox': false,
-          'canSendEmail': false,
-          'resetPasswordToken': null,
-          'resetPasswordExpires': null,
-          'firstName': 'Egor',
-          'lastName': 'Ivanov',
-          'email': 'egor@gg.ru',
-          'phoneNumber': '+7123123123123',
-          'street': '1',
-          'houseno': '1',
-          'zip': '1',
-          'city': '1',
-          'country': 'AO',
-          'createdAt': '2018-05-29T05:13:43.000Z',
-          'updatedAt': '2018-05-29T05:22:10.000Z'
-        },
-        'meta': {
-          'text': 'egor@gg.ru',
-          'url': '/users/21'
-        }
-      }].concat(fields)
+      ]
+    },
+    languages () {
+      console.log(this.$i18n.messages)
+      return Object.keys(this.$i18n.messages)
     }
   }
 }

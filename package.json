@@ -14,9 +14,11 @@
     "axios": "^0.18.0",
     "faker": "^4.1.0",
     "vue": "^2.5.2",
+    "vue-i18n": "^7.8.0",
     "vuetify": "^1.0.18"
   },
   "devDependencies": {
+    "@kazupon/vue-i18n-loader": "^0.2.0",
     "autoprefixer": "^7.1.2",
     "babel-core": "^6.22.1",
     "babel-eslint": "^8.2.1",
