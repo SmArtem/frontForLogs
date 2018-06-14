@@ -8,10 +8,6 @@ import VueI18n from 'vue-i18n'
 import 'vuetify/dist/vuetify.min.css'
 import locales from './locales.js'
 
-const langs = []
-Object.keys(locales.messages).forEach(function (lang) {
-  langs.push(lang)
-})
 Vue.use(Vuetify, {
   theme: {
     primary: '#01579B',
@@ -32,7 +28,6 @@ Vue.config.productionTip = false
 new Vue({
   el: '#app',
   i18n,
-  locals: langs,
   components: { App },
   template: '<App/>'
 })

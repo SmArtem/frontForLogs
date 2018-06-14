@@ -8,48 +8,10 @@
               <v-text-field v-model.trim="userSearch" :label="$t('userName')"/>
             </v-flex>
             <v-flex xs4>
-              <v-menu
-                ref="dateMenuEnd"
-                :close-on-content-click="false"
-                v-model="dateMenuStart"
-                :nudge-right="40"
-                lazy
-                transition="scale-transition"
-                offset-y
-                full-width
-                max-width="290px"
-                min-width="290px"
-              >
-                <v-text-field
-                  slot="activator"
-                  v-model="dateSearchStart"
-                  :label="$t('dateStart')"
-                  prepend-icon="event"
-                  readonly/>
-                <v-date-picker v-model="dateSearchStart" :locale="$i18n.locale" no-title @input="dateMenuStart = false"></v-date-picker>
-              </v-menu>
+              <date-field :label="$t('dateStart')" v-model="dateSearchStart" :local="$i18n.locale || 'ru-RU'"/>
             </v-flex>
             <v-flex xs4>
-              <v-menu
-                ref="timeMenuStart"
-                :close-on-content-click="false"
-                v-model="timeMenuStart"
-                :nudge-right="40"
-                lazy
-                transition="scale-transition"
-                offset-y
-                full-width
-                max-width="290px"
-                min-width="290px"
-              >
-                <v-text-field
-                  slot="activator"
-                  v-model="timeSearchStart"
-                  :label="$t('timeStart')"
-                  prepend-icon="access_time"
-                  readonly/>
-                <v-time-picker v-model="timeSearchStart" format="24hr" @input="timeMenuStart = false"/>
-              </v-menu>
+              <time-field :label="$t('timeStart')" v-model="timeSearchStart"/>
             </v-flex>
            </v-layout>
            <v-layout>
@@ -62,48 +24,10 @@
               />
             </v-flex>
             <v-flex xs4>
-              <v-menu
-                ref="dateMenuEnd"
-                :close-on-content-click="false"
-                v-model="dateMenuEnd"
-                :nudge-right="40"
-                lazy
-                transition="scale-transition"
-                offset-y
-                full-width
-                max-width="290px"
-                min-width="290px"
-              >
-                <v-text-field
-                  slot="activator"
-                  v-model="dateSearchEnd"
-                  :label="$t('dateEnd')"
-                  prepend-icon="event"
-                  readonly/>
-                <v-date-picker v-model="dateSearchEnd" :locale="$i18n.locale" no-title @input="dateMenuEnd = false"></v-date-picker>
-              </v-menu>
+              <date-field :label="$t('dateEnd')" v-model="dateSearchEnd" :local="$i18n.locale || 'ru-RU'"/>
             </v-flex>
             <v-flex xs4>
-              <v-menu
-                ref="timeMenuStart"
-                :close-on-content-click="false"
-                v-model="timeMenuEnd"
-                :nudge-right="40"
-                lazy
-                transition="scale-transition"
-                offset-y
-                full-width
-                max-width="290px"
-                min-width="290px"
-              >
-                <v-text-field
-                  slot="activator"
-                  v-model="timeSearchEnd"
-                  :label="$t('timeEnd')"
-                  prepend-icon="access_time"
-                  readonly/>
-                <v-time-picker v-model="timeSearchEnd" format="24hr" @input="timeMenuEnd = false"/>
-              </v-menu>
+              <time-field :label="$t('timeEnd')" v-model="timeSearchEnd"/>
             </v-flex>
           </v-layout>
           <v-layout>
@@ -111,7 +35,7 @@
               <v-btn @click="reset" color="info">{{$t("reset")}}</v-btn>
             </v-flex>
             <v-flex xs4>
-              <v-btn-toggle v-model="$i18n.locale">
+              <v-btn-toggle mandatory v-model="$i18n.locale">
                 <v-btn :value="l" v-for="(l, index) in languages" :key="index">
                   <img :src="`http://www.countryflags.io/${l[3]+l[4]}/flat/64.png`" width="32">
                 </v-btn>
@@ -120,7 +44,7 @@
           </v-layout>
         </v-card>
       </v-container>
-      <v-container :grid-list-xl="true">
+      <v-container>
         <v-card>
           <v-data-table
             :rows-per-page-items="[5,10,25, {'text': $t('all'),'value':-1}]"
@@ -151,11 +75,16 @@
 
 <script>
 import logs from './getLogs.js'
+import DataField from './DateField'
+import TimeField from './TimeField'
 
 export default {
   name: 'App',
+  components: {
+    'date-field': DataField,
+    'time-field': TimeField
+  },
   data () {
-    console.log(this)
     return {
       selected: null,
       options: [
@@ -166,13 +95,9 @@ export default {
       ],
       userSearch: '',
       dateSearchStart: null,
-      dateMenuStart: null,
       dateSearchEnd: null,
-      dateMenuEnd: false,
       timeSearchStart: null,
-      timeMenuStart: null,
       timeSearchEnd: null,
-      timeMenuEnd: null,
       pagination: {
         sortBy: 'created_time',
         descending: true,
@@ -273,7 +198,6 @@ export default {
       ]
     },
     languages () {
-      console.log(this.$i18n.messages)
       return Object.keys(this.$i18n.messages)
     }
   }
