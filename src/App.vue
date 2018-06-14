@@ -105,15 +105,20 @@
                 <v-time-picker v-model="timeSearchEnd" format="24hr" @input="timeMenuEnd = false"/>
               </v-menu>
             </v-flex>
-           </v-layout>
-           <v-btn @click="reset" color="info">{{$t("reset")}}</v-btn>
-           <v-select
-                :items="languages"
-                v-model="$i18n.locale"
-                label="Select"
-                item-value="text"
-              />
-         </v-card>
+          </v-layout>
+          <v-layout>
+            <v-flex xs8>
+              <v-btn @click="reset" color="info">{{$t("reset")}}</v-btn>
+            </v-flex>
+            <v-flex xs4>
+              <v-btn-toggle v-model="$i18n.locale">
+                <v-btn :value="l" v-for="(l, index) in languages" :key="index">
+                  <img :src="`http://www.countryflags.io/${l[3]+l[4]}/flat/64.png`" width="32">
+                </v-btn>
+              </v-btn-toggle>
+            </v-flex>
+          </v-layout>
+        </v-card>
       </v-container>
       <v-container :grid-list-xl="true">
         <v-card>
